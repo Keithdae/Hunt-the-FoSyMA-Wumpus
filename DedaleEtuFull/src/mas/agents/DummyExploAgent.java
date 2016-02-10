@@ -3,10 +3,14 @@ package mas.agents;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Random;
 
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.SingleGraph;
+
 import env.Environment;
+import graph.Graphe;
+import graph.Pair;
 import mas.abstractAgent;
 import mas.behaviours.*;
 
@@ -18,7 +22,8 @@ public class DummyExploAgent extends abstractAgent{
 	 */
 	private static final long serialVersionUID = -1784844593772918359L;
 
-	private Collection<String> listeExplores = new HashSet<String>();
+	private Graphe graph = new Graphe();
+	private Graph affichage = new SingleGraph(this.getLocalName());
 	private Random rng = new Random();
 
 	/**
@@ -43,12 +48,13 @@ public class DummyExploAgent extends abstractAgent{
 			System.exit(-1);
 		}
 	
-		this.addToExplores(this.getCurrentPosition());
 
 		//Add the behaviours
 		//addBehaviour(new RandomWalkBehaviour(this));
 		addBehaviour(new SayHello(this));
 		addBehaviour(new CoopWalk(this));
+
+		this.affichage.display();
 		
 
 		System.out.println("the agent "+this.getLocalName()+ " is started");
@@ -63,23 +69,39 @@ public class DummyExploAgent extends abstractAgent{
 	}
 	
 	public Collection<String> getListeExplores() {
-		return listeExplores;
+		return graph.getExplores();
+	}
+	
+	public Collection<String> getListeConnus() {
+		return graph.getConnus();
+	}
+	
+	public Collection<Pair<String,String>> getListeAretes() {
+		return graph.getAretes();
 	}
 	
 	public Serializable getListeExploresSerial() {
-		return (Serializable) listeExplores;
-	}
-
-	public void setListeExplores(Collection<String> listeExplores) {
-		this.listeExplores = listeExplores;
+		return (Serializable) graph.getExplores();
 	}
 	
 	public void addToExplores(String node){
-		this.listeExplores.add(node);
+		graph.getExplores().add(node);
 	}
 	
 	public int getRandom(int max)
 	{
 		return rng.nextInt(max);
 	}
+	
+	public Serializable getGraphSerial()
+	{
+		return (Serializable) graph;
+	}
+	
+	public Graphe getGraph()
+	{
+		return graph;
+	}
+	
+	
 }

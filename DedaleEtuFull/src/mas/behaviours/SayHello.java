@@ -1,12 +1,12 @@
 package mas.behaviours;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
+
 
 public class SayHello extends TickerBehaviour{
 
@@ -35,7 +35,7 @@ public class SayHello extends TickerBehaviour{
 		if (myPosition!=""){
 			System.out.println("Agent "+this.myAgent.getLocalName()+ " is trying to reach its friends");
 			try {
-				msg.setContentObject(((mas.agents.DummyExploAgent)this.myAgent).getListeExploresSerial());
+				msg.setContentObject(((mas.agents.DummyExploAgent)this.myAgent).getGraphSerial());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

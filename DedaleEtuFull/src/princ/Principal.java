@@ -240,7 +240,7 @@ public class Principal {
 		}
 //
 ////
-		c = containerList.get("container0");
+		/*c = containerList.get("container0");
 		agentName="Explo2";
 		try {
 
@@ -252,7 +252,7 @@ public class Principal {
 		} catch (StaleProxyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 //		//Agent0 on container0
 //		c = containerList.get("container0");
