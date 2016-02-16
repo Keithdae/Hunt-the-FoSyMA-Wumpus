@@ -3,14 +3,15 @@ package mas.agents;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
 
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
+
+
 
 import env.Environment;
+import graph.GraphStreamSerial;
 import graph.Graphe;
-import graph.Pair;
 import mas.abstractAgent;
 import mas.behaviours.*;
 
@@ -22,9 +23,18 @@ public class DummyExploAgent extends abstractAgent{
 	 */
 	private static final long serialVersionUID = -1784844593772918359L;
 
-	private Graphe graph = new Graphe();
-	private Graph affichage = new SingleGraph(this.getLocalName());
+	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
+	private Graphe graphe = new Graphe();
 	private Random rng = new Random();
+
+	protected String styleSheet =
+	        "node.known {" +
+	        "	fill-color: red;" +
+	        "}" +
+	        "node.explored {" +
+	        "	fill-color: blue, yellow;" +
+	        "	fill-mode: dyn-plain;" +
+	        "}";
 
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -47,6 +57,8 @@ public class DummyExploAgent extends abstractAgent{
 			System.err.println("Malfunction during parameter's loading of agent"+ this.getClass().getName());
 			System.exit(-1);
 		}
+		
+		//graphe.addNodeExpl(this.getCurrentPosition());
 	
 
 		//Add the behaviours
@@ -54,7 +66,11 @@ public class DummyExploAgent extends abstractAgent{
 		addBehaviour(new SayHello(this));
 		addBehaviour(new CoopWalk(this));
 
-		this.affichage.display();
+		graph.addAttribute("ui.stylesheet", styleSheet);
+		graph.addAttribute("ui.quality");
+	    graph.addAttribute("ui.antialias");
+		graph.display();
+		
 		
 
 		System.out.println("the agent "+this.getLocalName()+ " is started");
@@ -69,24 +85,17 @@ public class DummyExploAgent extends abstractAgent{
 	}
 	
 	public Collection<String> getListeExplores() {
-		return graph.getExplores();
+		return graphe.getExplores();
 	}
 	
 	public Collection<String> getListeConnus() {
-		return graph.getConnus();
+		return graphe.getConnus();
 	}
 	
-	public Collection<Pair<String,String>> getListeAretes() {
-		return graph.getAretes();
-	}
-	
-	public Serializable getListeExploresSerial() {
+	/*public Serializable getListeExploresSerial() {
 		return (Serializable) graph.getExplores();
-	}
+	}*/
 	
-	public void addToExplores(String node){
-		graph.getExplores().add(node);
-	}
 	
 	public int getRandom(int max)
 	{
@@ -95,12 +104,12 @@ public class DummyExploAgent extends abstractAgent{
 	
 	public Serializable getGraphSerial()
 	{
-		return (Serializable) graph;
+		return (Serializable) graphe;
 	}
 	
 	public Graphe getGraph()
 	{
-		return graph;
+		return graphe;
 	}
 	
 	

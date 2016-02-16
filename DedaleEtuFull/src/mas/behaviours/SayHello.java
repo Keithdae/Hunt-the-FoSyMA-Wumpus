@@ -21,7 +21,7 @@ public class SayHello extends TickerBehaviour{
 	 *  
 	 */
 	public SayHello (final Agent myagent) {
-		super(myagent, 3000);
+		super(myagent, 100);
 		//super(myagent);
 	}
 
@@ -35,6 +35,7 @@ public class SayHello extends TickerBehaviour{
 		if (myPosition!=""){
 			System.out.println("Agent "+this.myAgent.getLocalName()+ " is trying to reach its friends");
 			try {
+				System.out.println("I sent : " + ((mas.agents.DummyExploAgent)this.myAgent).getGraph());
 				msg.setContentObject(((mas.agents.DummyExploAgent)this.myAgent).getGraphSerial());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

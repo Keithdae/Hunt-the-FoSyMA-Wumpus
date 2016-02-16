@@ -35,7 +35,7 @@ public class Principal {
 
 		//0) Create the real environment and the observed one
 		env= new Environment(ENVtype.GRID,3,null);
-		//env= new Environment(ENVtype.DOROGOVTSEV,15,null);
+		//env= new Environment(ENVtype.DOROGOVTSEV,500,null);
 
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
@@ -240,7 +240,7 @@ public class Principal {
 		}
 //
 ////
-		/*c = containerList.get("container0");
+		c = containerList.get("container0");
 		agentName="Explo2";
 		try {
 
@@ -252,7 +252,7 @@ public class Principal {
 		} catch (StaleProxyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 
 //		//Agent0 on container0
 //		c = containerList.get("container0");

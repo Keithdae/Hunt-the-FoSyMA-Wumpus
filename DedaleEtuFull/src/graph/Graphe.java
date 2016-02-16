@@ -44,12 +44,21 @@ public class Graphe implements Serializable {
 		this.explores.addAll(g.getExplores());
 		this.connus.addAll(g.getConnus());
 		this.aretes.addAll(g.getAretes());
-		Collection<String> temp = connus;
+		Collection<String> temp = new HashSet<String>(connus);
 		temp.retainAll(explores);
 		connus.removeAll(temp);
 	}
 	
 	public boolean isExplored(){
 		return connus.isEmpty();
+	}
+	
+	
+	public String toString(){
+		String res = "Expl = ";
+		res += explores;
+		res += "\n Known = " + connus;
+		//res += "\n Edges = " + aretes;
+		return res;
 	}
 }
