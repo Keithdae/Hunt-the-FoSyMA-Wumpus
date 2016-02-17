@@ -2,11 +2,9 @@ package mas.agents;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Random;
-
-
 
 
 import env.Environment;
@@ -26,6 +24,10 @@ public class DummyExploAgent extends abstractAgent{
 	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
 	private Graphe graphe = new Graphe();
 	private Random rng = new Random();
+	
+	private int echecs = 0;
+	private ArrayList<String> path = new ArrayList<String>();
+
 
 	protected String styleSheet =
 	        "node.known {" +
@@ -71,7 +73,6 @@ public class DummyExploAgent extends abstractAgent{
 	    graph.addAttribute("ui.antialias");
 		graph.display();
 		
-		
 
 		System.out.println("the agent "+this.getLocalName()+ " is started");
 
@@ -96,6 +97,9 @@ public class DummyExploAgent extends abstractAgent{
 		return (Serializable) graph.getExplores();
 	}*/
 	
+	public GraphStreamSerial getGraphStream(){
+		return this.graph;
+	}
 	
 	public int getRandom(int max)
 	{
@@ -111,6 +115,24 @@ public class DummyExploAgent extends abstractAgent{
 	{
 		return graphe;
 	}
+
+	public int getEchecs() {
+		return echecs;
+	}
+
+	public void resetEchecs() {
+		this.echecs = 0;
+	}
 	
-	
+	public void incEchecs() {
+		this.echecs++;
+	}
+
+	public ArrayList<String> getPath() {
+		return path;
+	}
+
+	public void setPath(ArrayList<String> path) {
+		this.path = path;
+	}
 }

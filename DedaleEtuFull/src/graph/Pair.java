@@ -6,8 +6,8 @@ public class Pair<T1, T2> implements Serializable{
 
 	private static final long serialVersionUID = 7505507600319811364L;
 	
-	final T1 first;
-	final T2 second;
+	final private T1 first;
+	final private T2 second;
 	
 
     public Pair(T1 first, T2 second) {
@@ -51,6 +51,5 @@ public class Pair<T1, T2> implements Serializable{
     public T2 getSecond() {
     	return second;
     }
-
 
 }

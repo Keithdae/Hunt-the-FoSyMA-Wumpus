@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.graph.implementations.SingleNode;
@@ -59,6 +60,18 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 
 		return res;
 	}
+	
+	public HashSet<Pair<String,String>> getEdges(){
+		Object[] edg = this.getEdgeSet().toArray();
+		HashSet<Pair<String,String>> res = new HashSet<Pair<String,String>>();
+		
+		for(int i=0;i<edg.length;i++)
+		{
+			Edge e = (Edge) edg[i];
+			res.add(new Pair<String,String>(e.getNode0().getId(), e.getNode1().getId()));
+		}
+		return res;
+	}
 
 	public boolean isExplored() {
 		boolean res = true;
@@ -95,6 +108,24 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 		if(this.getEdge(edgeName) == null)
 		{
 			this.addEdge(edgeName, node1, node2);
+		}
+	}
+	
+	public void miseAJour(Graphe gus){
+		HashSet<String> expl = new HashSet<String>(gus.getExplores());
+		HashSet<String> known = new HashSet<String>(gus.getConnus());
+		HashSet<Pair<String,String>> edgeus = new HashSet<Pair<String,String>>(gus.getAretes());
+		expl.removeAll(this.getExplores());
+		known.removeAll(this.getConnus());
+		edgeus.removeAll(this.getEdges());
+		for(String s : expl){
+			this.addNodeExpl(s);
+		}
+		for(String s : known){
+			this.addNodeSafe(s);
+		}
+		for(Pair<String,String> p : edgeus){
+			this.addEdge(p.getFirst()+"|"+p.getSecond(), p.getFirst(), p.getSecond());
 		}
 	}
 }
