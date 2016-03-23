@@ -94,6 +94,9 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 		this.getNode(node).setAttribute("ui.class", "explored");
 	}
 	
+	public void addNodeTreasure(String node){
+		this.getNode(node).setAttribute("treasure", "true");
+	}
 	
 	public void addNodeSafe(String node)
 	{
@@ -105,7 +108,7 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 	}
 
 	public void addEdgeSafe(String edgeName, String node1, String node2) {
-		if(this.getEdge(edgeName) == null)
+		if((this.getEdge(edgeName) == null) && (this.getEdge(node2+"|"+node1) == null))
 		{
 			this.addEdge(edgeName, node1, node2);
 		}
@@ -125,7 +128,11 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 			this.addNodeSafe(s);
 		}
 		for(Pair<String,String> p : edgeus){
-			this.addEdge(p.getFirst()+"|"+p.getSecond(), p.getFirst(), p.getSecond());
+			this.addEdgeSafe(p.getFirst()+"|"+p.getSecond(), p.getFirst(), p.getSecond());
+		}
+		for(Pair<String,Integer> t: gus.getTresors()){
+			this.addNodeTreasure(t.getFirst());
+			this.getNode(t.getFirst()).addAttribute("ui.class","treasure");
 		}
 	}
 }

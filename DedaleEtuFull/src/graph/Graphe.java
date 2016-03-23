@@ -14,6 +14,7 @@ public class Graphe implements Serializable {
 	private Collection<String> explores = new HashSet<String>();
 	private Collection<String> connus = new HashSet<String>();
 	private Collection<Pair<String,String>> aretes = new HashSet<Pair<String,String>>();
+	private Collection<Pair<String,Integer>> tresors = new HashSet<Pair<String,Integer>>();
 	
 	
 	// Getters
@@ -26,8 +27,9 @@ public class Graphe implements Serializable {
 	public Collection<Pair<String, String>> getAretes() {
 		return aretes;
 	}	
-	
-	
+	public void addTresor(String noeud, Integer attribute){
+		this.tresors.add(new Pair<String,Integer>(noeud, attribute));
+	}	
 	public void addNodeExpl(String noeud){
 		explores.add(noeud);
 		connus.remove(noeud);
@@ -45,6 +47,24 @@ public class Graphe implements Serializable {
 		this.explores.addAll(g.getExplores());
 		this.connus.addAll(g.getConnus());
 		this.aretes.addAll(g.getAretes());
+		// Fusion des tresors
+		Collection<Pair<String,Integer>> tres = g.getTresors();
+		for(Pair<String,Integer> t1:tres)
+		{
+			for(Pair<String,Integer> t2:this.tresors)
+			{
+				// Si a une position donnee la quantite de tresor a diminuee, on met a jour
+				if(t1.getFirst() == t2.getFirst()) 
+				{
+					if(t1.getSecond() < t2.getSecond())
+					{
+						this.tresors.remove(t2);
+						this.tresors.add(t1);
+					}
+				}
+			}
+		}
+		
 		Collection<String> temp = new HashSet<String>(connus);
 		temp.retainAll(explores);
 		connus.removeAll(temp);
@@ -54,7 +74,10 @@ public class Graphe implements Serializable {
 		return connus.isEmpty();
 	}
 	
-	
+	public Collection<Pair<String,Integer>> getTresors(){
+		return this.tresors;
+	}
+		
 	public String toString(){
 		String res = "Expl = ";
 		res += explores;
@@ -102,20 +125,29 @@ public class Graphe implements Serializable {
 				}
 			}
 		}
+		else
+		{
+			Collection<String> temp = new HashSet<String>(explores);
+			temp.removeAll(markus);
+			if(!temp.isEmpty()){
+				System.out.println("INCONSISTENCY : " + temp);
+				System.out.println("EDGES : " + aretes);
+				System.out.println("START : "+ start);
+				System.out.println("VOISINS : "+ voisins(start));
+				System.out.println("MARKUS : " + markus);
+			}
+		}
 		return res; //renvoie le chemin (suite de noeuds, start non-inclus) de start vers le noeud "connu" le plus proche
 	}
 	
 
 	public ArrayList<String> voisins(String nodus){
 		ArrayList<String> res = new ArrayList<String>();
-		for(int i=0;i<aretes.size();i++){
-			for (Pair<String,String> edgeus : aretes) {
-				if(edgeus.getFirst() == nodus)
-					res.add(edgeus.getSecond());
-				else if(edgeus.getSecond() == nodus)
-					res.add(edgeus.getFirst());
-					
-			}
+		for (Pair<String,String> edgeus : aretes) {
+			if(edgeus.getFirst().equals(nodus))
+				res.add(edgeus.getSecond());
+			else if(edgeus.getSecond().equals(nodus))
+				res.add(edgeus.getFirst());					
 		}
 		return res;
 	}

@@ -1,10 +1,23 @@
 package mas.agents;
 
 
+import jade.core.behaviours.FSMBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+
+
+
+
+
+
 
 
 import env.Environment;
@@ -14,7 +27,7 @@ import mas.abstractAgent;
 import mas.behaviours.*;
 
 
-public class DummyExploAgent extends abstractAgent{
+public class ExploAgent extends abstractAgent{
 
 	/**
 	 * 
@@ -31,10 +44,15 @@ public class DummyExploAgent extends abstractAgent{
 
 	protected String styleSheet =
 	        "node.known {" +
-	        "	fill-color: red;" +
+	        "	fill-color: red, cyan;" +
+	        "	fill-mode: dyn-plain;" +
 	        "}" +
 	        "node.explored {" +
-	        "	fill-color: blue, yellow;" +
+	        "	fill-color: blue, cyan;" +
+	        "	fill-mode: dyn-plain;" +
+	        "}" +
+	        "node.treasure {" +
+	        "	fill-color: yellow, cyan;" +
 	        "	fill-mode: dyn-plain;" +
 	        "}";
 
@@ -64,14 +82,36 @@ public class DummyExploAgent extends abstractAgent{
 	
 
 		//Add the behaviours
-		//addBehaviour(new RandomWalkBehaviour(this));
-		addBehaviour(new SayHello(this));
-		addBehaviour(new CoopWalk(this));
-
+		FSMBehaviour fsm = new FSMBehaviour(this);
+		ParallelBehaviour pb = new ParallelBehaviour();
+		pb.addSubBehaviour(new SendGraph(this));
+		pb.addSubBehaviour(new CoopWalk(this));
+		fsm.registerFirstState(pb, "Exploration");
+		fsm.registerState(new TreasureBehaviour(this), "Treasure");
+		fsm.registerTransition("Exploration", "Treasure", 0);
+		fsm.registerTransition("Treasure", "Exploration", 0);
+		addBehaviour(fsm);
+		
+		
+		
+		// Initialize graphStream
 		graph.addAttribute("ui.stylesheet", styleSheet);
 		graph.addAttribute("ui.quality");
 	    graph.addAttribute("ui.antialias");
 		graph.display();
+		
+		//
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID()); /* getAID est l'AID de l'agent qui veut s'enregistrer*/
+		ServiceDescription sd  = new ServiceDescription();
+		sd.setType( "explorer" ); /* il faut donner des noms aux services qu'on propose (ici explorer)*/
+		sd.setName(getLocalName() );
+		dfd.addServices(sd);
+		        
+		try {  
+		      DFService.register(this, dfd );  
+		}
+		catch (FIPAException fe) { fe.printStackTrace(); }
 		
 
 		System.out.println("the agent "+this.getLocalName()+ " is started");

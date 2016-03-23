@@ -11,7 +11,7 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import mas.agents.DummyExploAgent;
+import mas.agents.ExploAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,15 +27,17 @@ public class Principal {
 	private static String hostname = "127.0.0.1"; 
 	private static HashMap<String, ContainerController> containerList=new HashMap<String, ContainerController>();// container's name - container's ref
 	private static List<AgentController> agentList;// agents's ref
+	@SuppressWarnings("unused")
 	private static Runtime rt;	
+	private static int nbAgents = 10;
 
 	private static Environment env;// static ref of the real environment
 
 	public static void main(String[] args){
 
 		//0) Create the real environment and the observed one
-		env= new Environment(ENVtype.GRID,3,null);
-		//env= new Environment(ENVtype.DOROGOVTSEV,500,null);
+		//env= new Environment(ENVtype.GRID_T,20,null);
+		env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
 
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
@@ -227,16 +229,18 @@ public class Principal {
 //
 		//Agent0 on container0
 		c = containerList.get("container0");
-		agentName="Explo1";
-		try {
-
-			Object[] objtab=new Object[]{env};//used to give informations to the agent
-			AgentController	ag=c.createNewAgent(agentName,DummyExploAgent.class.getName(),objtab);
-			agentList.add(ag);
-			System.out.println(agentName+" launched");
-		} catch (StaleProxyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for(int i=0; i<nbAgents;i++){
+			agentName="Explo"+Integer.toString(i);
+			try {
+	
+				Object[] objtab=new Object[]{env};//used to give informations to the agent
+				AgentController	ag=c.createNewAgent(agentName,ExploAgent.class.getName(),objtab);
+				agentList.add(ag);
+				System.out.println(agentName+" launched");
+			} catch (StaleProxyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 //
 ////
@@ -246,7 +250,7 @@ public class Principal {
 
 
 			Object[] objtab=new Object[]{env};//used to give informations to the agent
-			AgentController	ag=c.createNewAgent(agentName,DummyExploAgent.class.getName(),objtab);
+			AgentController	ag=c.createNewAgent(agentName,ExploAgent.class.getName(),objtab);
 			agentList.add(ag);
 			System.out.println(agentName+" launched");
 		} catch (StaleProxyException e) {

@@ -15,7 +15,7 @@ import jade.lang.acl.UnreadableException;
 public class CoopWalk extends TickerBehaviour {
 
 	public CoopWalk(final mas.abstractAgent myagent) {
-		super(myagent,100);
+		super(myagent,10);
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -28,7 +28,7 @@ public class CoopWalk extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		// TODO Auto-generated method stub
-		mas.agents.DummyExploAgent agent = (mas.agents.DummyExploAgent)this.myAgent;
+		mas.agents.ExploAgent agent = (mas.agents.ExploAgent)this.myAgent;
 		ACLMessage msg;
 		do{
 			final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
@@ -37,7 +37,7 @@ public class CoopWalk extends TickerBehaviour {
 				//Union des listes des noeuds explorés
 				try {
 					Graphe grapheRecu = (Graphe)msg.getContentObject();
-					agent.getGraph().merge(grapheRecu);
+					agent.getGraph().merge(grapheRecu);												
 				} catch(UnreadableException e){
 					e.printStackTrace();
 				}
@@ -53,6 +53,10 @@ public class CoopWalk extends TickerBehaviour {
 		Collection<String> listeExplorables = new ArrayList<String>();
 		for(Couple<String,List<Attribute>> noeud: lobs){
 			listeExplorables.add(noeud.getLeft());
+		}
+		// Localisation des tresors
+		if(lobs.get(0).getRight().contains(Attribute.TREASURE)){
+			agent.getGraph().addTresor(lobs.get(0).getLeft(),(Integer)lobs.get(0).getRight().get(0).getValue());
 		}
 		//Difference des listes explorables et explorés
 		String curNode ="";
@@ -87,7 +91,16 @@ public class CoopWalk extends TickerBehaviour {
 			e.printStackTrace();
 		}*/
 		
+		agent.getGraphStream().miseAJour(agent.getGraph());
 		
+		// Si on a fini l'exploration
+		if(agent.getGraph().isExplored())
+		{
+			System.out.println("Fin parcours");
+			//((mas.abstractAgent)this.myAgent).doDelete();
+			System.out.println("Noeuds explores a la fin : " + agent.getListeExplores());
+			this.stop();
+		}
 		
 		
 		// On se deplace vers un noeud connu a distance 1
@@ -99,8 +112,8 @@ public class CoopWalk extends TickerBehaviour {
 			if(avance){
 				agent.resetEchecs();
 				//agent.getGraph().addNodeExpl(((mas.abstractAgent)this.myAgent).getCurrentPosition());
-				//agent.getGraph().getNode(curNode).removeAttribute("ui.color");
-				//agent.getGraph().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
+				agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
+				agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
 			}
 			else
 				System.out.println("Failure to move");
@@ -118,6 +131,8 @@ public class CoopWalk extends TickerBehaviour {
 			if(avance){
 				agent.resetEchecs();
 				agent.getPath().remove(0);
+				agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
+				agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
 			}
 			else{
 				agent.incEchecs();
@@ -135,18 +150,10 @@ public class CoopWalk extends TickerBehaviour {
 				}
 				else{
 					agent.resetEchecs();
+					agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
+					agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
 				}
 			}
-		}
-		
-		if(agent.getGraph().isExplored())
-		{
-			System.out.println("Fin parcours");
-			//((mas.abstractAgent)this.myAgent).doDelete();
-			System.out.println("Noeuds explores a la fin : " + agent.getListeExplores());
-			this.stop();
-		}
-		agent.getGraphStream().miseAJour(agent.getGraph());
+		}		
 	}
-
 }
