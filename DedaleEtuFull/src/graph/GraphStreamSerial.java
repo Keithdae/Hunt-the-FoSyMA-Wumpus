@@ -15,6 +15,8 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 	
 	private static final long serialVersionUID = 4667604546699445450L;
 
+	
+	
 	public GraphStreamSerial(String id) {
 		super(id);
 	}
@@ -135,4 +137,7 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 			this.getNode(t.getFirst()).addAttribute("ui.class","treasure");
 		}
 	}
+	
 }
+
+

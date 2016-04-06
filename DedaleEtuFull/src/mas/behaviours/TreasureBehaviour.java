@@ -1,11 +1,13 @@
-package mas.agents;
+package mas.behaviours;
 
+
+import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 
 public class TreasureBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -9129138170018876510L;
 
-	public TreasureBehaviour(ExploAgent agent){
+	public TreasureBehaviour(Agent agent){
 		
 	}
 	@Override
