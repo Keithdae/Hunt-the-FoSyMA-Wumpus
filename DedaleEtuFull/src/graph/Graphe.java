@@ -155,4 +155,46 @@ public class Graphe implements Serializable {
 		}
 		return res;
 	}
+	
+	public ArrayList<String> checkPath(String start, String goal){
+		ArrayList<String> res = new ArrayList<String>();
+		ArrayList<String> file = new ArrayList<String>();
+		ArrayList<String> markus = new ArrayList<String>();
+		ArrayList<Pair<String,String>> perus = new ArrayList<Pair<String,String>>();
+		file.add(start);
+		markus.add(start);
+		String ncn = "";
+		boolean trouve = false;
+		while(!file.isEmpty() && !trouve){
+			String nodus = file.remove(0);
+			ArrayList<String> voisins = voisins(nodus);
+			for(int i=0;i<voisins.size() && !trouve;i++){
+				ncn = voisins.get(i);
+				perus.add(new Pair<String, String>(ncn,nodus));
+				if(ncn.equals(goal)){
+					trouve = true;
+				}
+				if(!markus.contains(ncn)){
+					file.add(ncn);
+					markus.add(ncn);
+				}
+			}
+		}
+		//BACKTRACK
+		if(trouve){
+			while(ncn != start){
+				res.add(0,ncn);
+				trouve = false;
+				int i=0;
+				while(!trouve){
+					if(perus.get(i).getFirst() == ncn){
+						ncn = perus.get(i).getSecond();
+						trouve=true; 
+					}
+					i++;
+				}
+			}
+		}
+		return res;
+	}
 }

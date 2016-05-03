@@ -13,7 +13,6 @@ import mas.abstractAgent;
 import mas.behaviours.CoopWalk;
 import mas.behaviours.MigrationBehaviour;
 import mas.behaviours.SendGraph;
-import mas.behaviours.TreasureBehaviour;
 import mas.agents.interactions.protocols.deployMe.*;
 
 public class MovingIndiana extends abstractAgent {
@@ -45,7 +44,7 @@ public class MovingIndiana extends abstractAgent {
 		pb.addSubBehaviour(new SendGraph(this));
 		pb.addSubBehaviour(new CoopWalk(this));
 		fsm.registerFirstState(pb, "Exploration");
-		fsm.registerState(new TreasureBehaviour(this), "Treasure");
+		//fsm.registerState(new TreasureBehaviour(this), "Treasure");
 		fsm.registerTransition("Exploration", "Treasure", 0);
 		fsm.registerTransition("Treasure", "Exploration", 0);
 		addBehaviour(fsm);

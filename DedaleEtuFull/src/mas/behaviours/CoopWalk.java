@@ -7,6 +7,7 @@ import java.util.List;
 import env.Attribute;
 import env.Couple;
 import graph.Graphe;
+import graph.Pair;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -44,6 +45,29 @@ public class CoopWalk extends TickerBehaviour {
 			}
 		}while(msg != null);
 		
+		//il y a-t-il des trésors autour?
+		final MessageTemplate msgTemplate = MessageTemplate.MatchLanguage("treasure");
+		msg = this.myAgent.receive(msgTemplate);
+		if(msg != null) {
+			try {
+				@SuppressWarnings("unchecked")
+				Pair<Pair<String,Integer>,Integer> infotresor = (Pair<Pair<String,Integer>,Integer>) msg.getContentObject();
+				if(!agent.getGraph().checkPath(agent.getCurrentPosition(), infotresor.getFirst().getFirst()).isEmpty())
+				{
+					agent.restartTreasuring(infotresor.getFirst(), infotresor.getSecond(), msg.getSender().getLocalName());
+					ACLMessage ack=new ACLMessage(7);
+					ack.setSender(this.myAgent.getAID());
+					ack.setLanguage("ack");
+					ack.setContent("ack");
+					ack.addReceiver(msg.getSender());
+					((mas.abstractAgent)this.myAgent).sendMessage(ack);
+					this.stop();
+				}
+			} catch(UnreadableException e){
+				e.printStackTrace();
+			}
+		}
+		
 		//Listes des noeuds voisins atteignables
 		List<Couple<String,List<Attribute>>> lobs=((mas.abstractAgent)this.myAgent).observe();
 		System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
@@ -57,6 +81,9 @@ public class CoopWalk extends TickerBehaviour {
 		// Localisation des tresors
 		if(lobs.get(0).getRight().contains(Attribute.TREASURE)){
 			agent.getGraph().addTresor(lobs.get(0).getLeft(),(Integer)lobs.get(0).getRight().get(0).getValue());
+			Pair<String,Integer> tresor = new Pair<String,Integer>(lobs.get(0).getLeft(),(Integer)lobs.get(0).getRight().get(0).getValue());
+			agent.restartTreasuring(tresor, 3, "");
+			this.stop();			
 		}
 		//Difference des listes explorables et explorés
 		String curNode ="";

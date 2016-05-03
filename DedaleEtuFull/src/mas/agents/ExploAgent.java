@@ -1,6 +1,7 @@
 package mas.agents;
 
 
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.FSMBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.DFService;
@@ -21,9 +22,13 @@ import java.util.Random;
 
 
 
+
+
+
 import env.Environment;
 import graph.GraphStreamSerial;
 import graph.Graphe;
+import graph.Pair;
 import mas.abstractAgent;
 import mas.behaviours.*;
 
@@ -43,6 +48,8 @@ public class ExploAgent extends abstractAgent{
 	private ArrayList<String> path = new ArrayList<String>();
 	
 	private FSMBehaviour fsm = new FSMBehaviour(this);
+	private ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
+	private CoopWalk cw = new CoopWalk(this);
 
 
 	protected String styleSheet =
@@ -85,13 +92,9 @@ public class ExploAgent extends abstractAgent{
 	
 
 		//Add the behaviours
-		ParallelBehaviour pb = new ParallelBehaviour();
 		pb.addSubBehaviour(new SendGraph(this));
-		pb.addSubBehaviour(new CoopWalk(this));
+		pb.addSubBehaviour(cw);
 		fsm.registerFirstState(pb, "Exploration");
-		fsm.registerState(new TreasureBehaviour(this), "Treasure");
-		fsm.registerTransition("Exploration", "Treasure", 0);
-		fsm.registerTransition("Treasure", "Exploration", 0);
 		addBehaviour(fsm);
 		
 		
@@ -103,7 +106,7 @@ public class ExploAgent extends abstractAgent{
 	    graph.addAttribute("ui.antialias");
 		graph.display();
 		
-		//
+		// Enregistrement sur le DF
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID()); /* getAID est l'AID de l'agent qui veut s'enregistrer*/
 		ServiceDescription sd  = new ServiceDescription();
@@ -178,4 +181,23 @@ public class ExploAgent extends abstractAgent{
 	public void setPath(ArrayList<String> path) {
 		this.path = path;
 	}
+	
+	public void restartExplo() {
+		jade.util.leap.Collection c = this.pb.getTerminatedChildren();
+		if(!c.isEmpty())
+		{
+			pb.removeSubBehaviour((Behaviour) c.toArray()[0]);
+			cw = new CoopWalk(this);
+			pb.addSubBehaviour(cw);
+		}
+	}
+	
+	public void restartTreasuring(Pair<String,Integer> tresor, int prof, String parent){
+		fsm.deregisterState("Treasure");
+		fsm.registerState(new TreasureBehaviour(this,tresor,prof, parent), "Treasure");
+		fsm.registerTransition("Exploration", "Treasure", 0);
+		fsm.registerTransition("Treasure", "Exploration", 0);
+		
+	}
+	
 }
