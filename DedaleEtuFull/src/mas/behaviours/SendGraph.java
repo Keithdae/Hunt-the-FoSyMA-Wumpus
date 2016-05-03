@@ -35,7 +35,7 @@ public class SendGraph extends TickerBehaviour{
 
 		ACLMessage msg=new ACLMessage(7);
 		msg.setSender(this.myAgent.getAID());
-
+		msg.setLanguage("graph");
 		if (myPosition!=""){
 			//System.out.println("Agent "+this.myAgent.getLocalName()+ " is trying to reach its friends");
 			try {

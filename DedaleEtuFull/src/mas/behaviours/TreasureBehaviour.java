@@ -13,6 +13,7 @@ public class TreasureBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 		// TODO Auto-generated method stub
+		System.out.println("TREASURE MODE ENABLED, PROCEED WITH ELIMINATION OF HUMAN RACE.");
 
 	}
 

@@ -51,11 +51,13 @@ public class Graphe implements Serializable {
 		Collection<Pair<String,Integer>> tres = g.getTresors();
 		for(Pair<String,Integer> t1:tres)
 		{
+			boolean found = false;
 			for(Pair<String,Integer> t2:this.tresors)
 			{
 				// Si a une position donnee la quantite de tresor a diminuee, on met a jour
 				if(t1.getFirst() == t2.getFirst()) 
 				{
+					found = true;
 					if(t1.getSecond() < t2.getSecond())
 					{
 						this.tresors.remove(t2);
@@ -63,6 +65,8 @@ public class Graphe implements Serializable {
 					}
 				}
 			}
+			if(!found)
+				this.tresors.add(t1);
 		}
 		
 		Collection<String> temp = new HashSet<String>(connus);

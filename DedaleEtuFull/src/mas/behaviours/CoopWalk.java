@@ -31,7 +31,7 @@ public class CoopWalk extends TickerBehaviour {
 		mas.agents.ExploAgent agent = (mas.agents.ExploAgent)this.myAgent;
 		ACLMessage msg;
 		do{
-			final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+			final MessageTemplate msgTemplate = MessageTemplate.MatchLanguage("graph");
 			msg = this.myAgent.receive(msgTemplate);
 			if(msg != null){
 				//Union des listes des noeuds explorés
@@ -99,6 +99,7 @@ public class CoopWalk extends TickerBehaviour {
 			System.out.println("Fin parcours");
 			//((mas.abstractAgent)this.myAgent).doDelete();
 			System.out.println("Noeuds explores a la fin : " + agent.getListeExplores());
+			System.out.println("Tresors trouves : " + agent.getGraph().getTresors());
 			this.stop();
 		}
 		
@@ -155,5 +156,6 @@ public class CoopWalk extends TickerBehaviour {
 				}
 			}
 		}		
-	}
+	} // OnTick	
+
 }

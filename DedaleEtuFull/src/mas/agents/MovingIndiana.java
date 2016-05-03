@@ -2,19 +2,12 @@ package mas.agents;
 
 import jade.core.behaviours.FSMBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-import org.graphstream.ui.view.Viewer;
-
-import graph.GraphStreamSerial;
 import graph.Graphe;
 import mas.abstractAgent;
 import mas.behaviours.CoopWalk;
@@ -67,8 +60,6 @@ public class MovingIndiana extends abstractAgent {
 	//private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
 	private Graphe graphe = new Graphe();
 	private Random rng = new Random();
-	private Viewer voyeur;
-	
 	private int echecs = 0;
 	private ArrayList<String> path = new ArrayList<String>();
 

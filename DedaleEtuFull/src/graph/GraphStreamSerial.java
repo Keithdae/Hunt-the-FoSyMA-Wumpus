@@ -120,6 +120,7 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 		HashSet<String> expl = new HashSet<String>(gus.getExplores());
 		HashSet<String> known = new HashSet<String>(gus.getConnus());
 		HashSet<Pair<String,String>> edgeus = new HashSet<Pair<String,String>>(gus.getAretes());
+		HashSet<Pair<String,Integer>> tresorus = new HashSet<Pair<String,Integer>>(gus.getTresors());
 		expl.removeAll(this.getExplores());
 		known.removeAll(this.getConnus());
 		edgeus.removeAll(this.getEdges());
@@ -132,7 +133,7 @@ public class GraphStreamSerial extends SingleGraph implements Serializable{
 		for(Pair<String,String> p : edgeus){
 			this.addEdgeSafe(p.getFirst()+"|"+p.getSecond(), p.getFirst(), p.getSecond());
 		}
-		for(Pair<String,Integer> t: gus.getTresors()){
+		for(Pair<String,Integer> t: tresorus){
 			this.addNodeTreasure(t.getFirst());
 			this.getNode(t.getFirst()).addAttribute("ui.class","treasure");
 		}

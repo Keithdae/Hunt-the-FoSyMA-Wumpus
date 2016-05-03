@@ -41,6 +41,8 @@ public class ExploAgent extends abstractAgent{
 	
 	private int echecs = 0;
 	private ArrayList<String> path = new ArrayList<String>();
+	
+	private FSMBehaviour fsm = new FSMBehaviour(this);
 
 
 	protected String styleSheet =
@@ -83,7 +85,6 @@ public class ExploAgent extends abstractAgent{
 	
 
 		//Add the behaviours
-		FSMBehaviour fsm = new FSMBehaviour(this);
 		ParallelBehaviour pb = new ParallelBehaviour();
 		pb.addSubBehaviour(new SendGraph(this));
 		pb.addSubBehaviour(new CoopWalk(this));
@@ -92,6 +93,7 @@ public class ExploAgent extends abstractAgent{
 		fsm.registerTransition("Exploration", "Treasure", 0);
 		fsm.registerTransition("Treasure", "Exploration", 0);
 		addBehaviour(fsm);
+		
 		
 		
 		

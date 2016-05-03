@@ -29,7 +29,7 @@ public class Principal {
 	private static List<AgentController> agentList;// agents's ref
 	@SuppressWarnings("unused")
 	private static Runtime rt;	
-	private static int nbAgents = 10;
+	private static int nbAgents = 2;
 
 	private static Environment env;// static ref of the real environment
 
@@ -37,7 +37,8 @@ public class Principal {
 
 		//0) Create the real environment and the observed one
 		//env= new Environment(ENVtype.GRID_T,20,null);
-		env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
+		//env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
+		env = new Environment("ressources/map2015","ressources/map2015config");
 
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
@@ -244,19 +245,7 @@ public class Principal {
 		}
 //
 ////
-		c = containerList.get("container0");
-		agentName="Explo2";
-		try {
-
-
-			Object[] objtab=new Object[]{env};//used to give informations to the agent
-			AgentController	ag=c.createNewAgent(agentName,ExploAgent.class.getName(),objtab);
-			agentList.add(ag);
-			System.out.println(agentName+" launched");
-		} catch (StaleProxyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 
 //		//Agent0 on container0
 //		c = containerList.get("container0");
