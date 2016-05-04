@@ -15,6 +15,7 @@ public class Graphe implements Serializable {
 	private Collection<String> connus = new HashSet<String>();
 	private Collection<Pair<String,String>> aretes = new HashSet<Pair<String,String>>();
 	private Collection<Pair<String,Integer>> tresors = new HashSet<Pair<String,Integer>>();
+	private Collection<Pair<String,Integer>> tresorsTraites = new HashSet<Pair<String,Integer>>();
 	
 	
 	// Getters
@@ -28,7 +29,38 @@ public class Graphe implements Serializable {
 		return aretes;
 	}	
 	public void addTresor(String noeud, Integer attribute){
+		boolean found = false;
+		Pair<String,Integer> tp = new Pair<String,Integer>("",0);
+		for(Pair<String,Integer> t : tresors)
+		{
+			if(t.getFirst().equals(noeud) && attribute < t.getSecond())
+			{
+				found = true;
+				tp = t;
+			}
+		}
+		if(found)
+		{
+			tresors.remove(tp);			
+		}
 		this.tresors.add(new Pair<String,Integer>(noeud, attribute));
+	}
+	public void addTresorTraites(String noeud, Integer attribute){
+		boolean found = false;
+		Pair<String,Integer> tp = new Pair<String,Integer>("",0);
+		for(Pair<String,Integer> t : tresorsTraites)
+		{
+			if(t.getFirst().equals(noeud) && attribute < t.getSecond())
+			{
+				found = true;
+				tp = t;
+			}
+		}
+		if(found)
+		{
+			tresorsTraites.remove(tp);			
+		}
+		this.tresorsTraites.add(new Pair<String,Integer>(noeud, attribute));
 	}	
 	public void addNodeExpl(String noeud){
 		explores.add(noeud);
@@ -51,22 +83,13 @@ public class Graphe implements Serializable {
 		Collection<Pair<String,Integer>> tres = g.getTresors();
 		for(Pair<String,Integer> t1:tres)
 		{
-			boolean found = false;
-			for(Pair<String,Integer> t2:this.tresors)
-			{
-				// Si a une position donnee la quantite de tresor a diminuee, on met a jour
-				if(t1.getFirst() == t2.getFirst()) 
-				{
-					found = true;
-					if(t1.getSecond() < t2.getSecond())
-					{
-						this.tresors.remove(t2);
-						this.tresors.add(t1);
-					}
-				}
-			}
-			if(!found)
-				this.tresors.add(t1);
+			this.addTresor(t1.getFirst(), t1.getSecond());
+		}
+		// Fusion des tresors traites
+		Collection<Pair<String,Integer>> trestrait = g.getTresorsTraites();
+		for(Pair<String,Integer> t1:trestrait)
+		{
+			this.addTresorTraites(t1.getFirst(), t1.getSecond());
 		}
 		
 		Collection<String> temp = new HashSet<String>(connus);
@@ -74,8 +97,21 @@ public class Graphe implements Serializable {
 		connus.removeAll(temp);
 	}
 	
+	private Collection<Pair<String, Integer>> getTresorsTraites() {
+		return this.tresorsTraites;
+	}
 	public boolean isExplored(){
 		return connus.isEmpty();
+	}
+	
+	public boolean estTraite(Pair<String, Integer> tre){
+		boolean res = false;
+		for(Pair<String,Integer> t:this.tresorsTraites)
+		{
+			if(tre.equals(t))
+				res = true;
+		}
+		return res;
 	}
 	
 	public Collection<Pair<String,Integer>> getTresors(){

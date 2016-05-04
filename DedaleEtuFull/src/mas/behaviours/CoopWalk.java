@@ -14,9 +14,11 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 public class CoopWalk extends TickerBehaviour {
+	
+	private boolean mustStop = false;
 
 	public CoopWalk(final mas.abstractAgent myagent) {
-		super(myagent,10);
+		super(myagent,((mas.agents.ExploAgent)myagent).getPeriod());
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -52,7 +54,7 @@ public class CoopWalk extends TickerBehaviour {
 			try {
 				@SuppressWarnings("unchecked")
 				Pair<Pair<String,Integer>,Integer> infotresor = (Pair<Pair<String,Integer>,Integer>) msg.getContentObject();
-				if(!agent.getGraph().checkPath(agent.getCurrentPosition(), infotresor.getFirst().getFirst()).isEmpty())
+				if(!agent.getGraph().checkPath(agent.getCurrentPosition(), infotresor.getFirst().getFirst()).isEmpty() && agent.getBackPackFreeSpace() > 0)
 				{
 					agent.restartTreasuring(infotresor.getFirst(), infotresor.getSecond(), msg.getSender().getLocalName());
 					ACLMessage ack=new ACLMessage(7);
@@ -62,6 +64,7 @@ public class CoopWalk extends TickerBehaviour {
 					ack.addReceiver(msg.getSender());
 					((mas.abstractAgent)this.myAgent).sendMessage(ack);
 					this.stop();
+					mustStop = true;
 				}
 			} catch(UnreadableException e){
 				e.printStackTrace();
@@ -82,8 +85,12 @@ public class CoopWalk extends TickerBehaviour {
 		if(lobs.get(0).getRight().contains(Attribute.TREASURE)){
 			agent.getGraph().addTresor(lobs.get(0).getLeft(),(Integer)lobs.get(0).getRight().get(0).getValue());
 			Pair<String,Integer> tresor = new Pair<String,Integer>(lobs.get(0).getLeft(),(Integer)lobs.get(0).getRight().get(0).getValue());
-			agent.restartTreasuring(tresor, 3, "");
-			this.stop();			
+			if(agent.getBackPackFreeSpace() > 0 && !agent.getGraph().estTraite(tresor))
+			{
+				agent.restartTreasuring(tresor, 3, "");
+				this.stop();
+				mustStop = true;
+			}
 		}
 		//Difference des listes explorables et explorés
 		String curNode ="";
@@ -128,61 +135,64 @@ public class CoopWalk extends TickerBehaviour {
 			System.out.println("Noeuds explores a la fin : " + agent.getListeExplores());
 			System.out.println("Tresors trouves : " + agent.getGraph().getTresors());
 			this.stop();
+			mustStop = true;
 		}
 		
-		
-		// On se deplace vers un noeud connu a distance 1
-		int i = 0;
-		boolean avance = false;
-		while(!avance && i < listeExplorables.size()){
-			//essayer d'avancer
-			avance = agent.moveTo((String)listeExplorables.toArray()[i]);
-			if(avance){
-				agent.resetEchecs();
-				//agent.getGraph().addNodeExpl(((mas.abstractAgent)this.myAgent).getCurrentPosition());
-				agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
-				agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
-			}
-			else
-				System.out.println("Failure to move");
-			i++;
-		}
-		
-		// Sinon on se deplace vers le noeud "connu" le proche
-		if(!avance)
+		if(!mustStop) // Behaviour fini
 		{
-			agent.setPath(agent.getGraph().bfsToNearest(agent.getCurrentPosition()));
-			if(!agent.getPath().isEmpty()){
-				avance = agent.moveTo(agent.getPath().get(0));
-				System.out.println("MY PATH IS : " + agent.getPath());
-			}
-			if(avance){
-				agent.resetEchecs();
-				agent.getPath().remove(0);
-				agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
-				agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
-			}
-			else{
-				agent.incEchecs();
-			}
-		}
-		
-		// Si on a toujours pas avance et le nombre d'echecs a atteint un seuil, on essaye de se deplacer aleatoirement
-		if(!avance && agent.getEchecs()==12){
-			while(lobs.size() != 0 && !avance)
-			{
-				int j = agent.getRandom(lobs.size());
-				avance = agent.moveTo(lobs.get(j).getLeft()); 
-				if(!avance){
-					lobs.remove(j);
-				}
-				else{
+			// On se deplace vers un noeud connu a distance 1
+			int i = 0;
+			boolean avance = false;
+			while(!avance && i < listeExplorables.size()){
+				//essayer d'avancer
+				avance = agent.moveTo((String)listeExplorables.toArray()[i]);
+				if(avance){
 					agent.resetEchecs();
+					//agent.getGraph().addNodeExpl(((mas.abstractAgent)this.myAgent).getCurrentPosition());
 					agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
 					agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
 				}
+				else
+					System.out.println("Failure to move");
+				i++;
 			}
-		}		
+			
+			// Sinon on se deplace vers le noeud "connu" le proche
+			if(!avance)
+			{
+				agent.setPath(agent.getGraph().bfsToNearest(agent.getCurrentPosition()));
+				if(!agent.getPath().isEmpty()){
+					avance = agent.moveTo(agent.getPath().get(0));
+					System.out.println("MY PATH IS : " + agent.getPath());
+				}
+				if(avance){
+					agent.resetEchecs();
+					agent.getPath().remove(0);
+					agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
+					agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
+				}
+				else{
+					agent.incEchecs();
+				}
+			}
+			
+			// Si on a toujours pas avance et le nombre d'echecs a atteint un seuil, on essaye de se deplacer aleatoirement
+			if(!avance && agent.getEchecs()==12){
+				while(lobs.size() != 0 && !avance)
+				{
+					int j = agent.getRandom(lobs.size());
+					avance = agent.moveTo(lobs.get(j).getLeft()); 
+					if(!avance){
+						lobs.remove(j);
+					}
+					else{
+						agent.resetEchecs();
+						agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
+						agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
+					}
+				}
+			}	
+		}
 	} // OnTick	
 
 }

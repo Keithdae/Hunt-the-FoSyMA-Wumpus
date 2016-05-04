@@ -29,7 +29,7 @@ public class Principal {
 	private static List<AgentController> agentList;// agents's ref
 	@SuppressWarnings("unused")
 	private static Runtime rt;	
-	private static int nbAgents = 2;
+	private static int nbAgents = 10;
 
 	private static Environment env;// static ref of the real environment
 
@@ -37,8 +37,8 @@ public class Principal {
 
 		//0) Create the real environment and the observed one
 		//env= new Environment(ENVtype.GRID_T,20,null);
-		//env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
-		env = new Environment("ressources/map2015","ressources/map2015config");
+		env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
+		//env = new Environment("ressources/mapTestTreasure","ressources/mapTestTreasureconfig");
 
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)

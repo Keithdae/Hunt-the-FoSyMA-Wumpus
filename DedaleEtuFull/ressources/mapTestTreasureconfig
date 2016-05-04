@@ -1,0 +1,5 @@
+mapname:treasure
+treasure:21:150
+agent:Explo0:21:50
+agent:Explo1:15:120
+agent:Explo2:4:130

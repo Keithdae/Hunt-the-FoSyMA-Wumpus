@@ -25,7 +25,7 @@ public class SendGraph extends TickerBehaviour{
 	 *  
 	 */
 	public SendGraph (final Agent myagent) {
-		super(myagent, 10);
+		super(myagent, ((mas.agents.ExploAgent)myagent).getPeriod());
 		//super(myagent);
 	}
 

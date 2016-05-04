@@ -8,11 +8,15 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+
+
 
 
 
@@ -43,7 +47,8 @@ public class ExploAgent extends abstractAgent{
 	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
 	private Graphe graphe = new Graphe();
 	private Random rng = new Random();
-	
+	private long period = 100;
+
 	private int echecs = 0;
 	private ArrayList<String> path = new ArrayList<String>();
 	
@@ -92,7 +97,7 @@ public class ExploAgent extends abstractAgent{
 	
 
 		//Add the behaviours
-		pb.addSubBehaviour(new SendGraph(this));
+		addBehaviour(new SendGraph(this));
 		pb.addSubBehaviour(cw);
 		fsm.registerFirstState(pb, "Exploration");
 		addBehaviour(fsm);
@@ -173,6 +178,10 @@ public class ExploAgent extends abstractAgent{
 	public void incEchecs() {
 		this.echecs++;
 	}
+	
+	public long getPeriod() {
+		return period;
+	}
 
 	public ArrayList<String> getPath() {
 		return path;
@@ -193,11 +202,28 @@ public class ExploAgent extends abstractAgent{
 	}
 	
 	public void restartTreasuring(Pair<String,Integer> tresor, int prof, String parent){
+		System.out.println("Start TREASURING for agent " + this.getLocalName());
 		fsm.deregisterState("Treasure");
 		fsm.registerState(new TreasureBehaviour(this,tresor,prof, parent), "Treasure");
 		fsm.registerTransition("Exploration", "Treasure", 0);
 		fsm.registerTransition("Treasure", "Exploration", 0);
 		
 	}
+	
+	public void viderBoiteReception(){
+		ACLMessage msg1, msg2, msg3, msg4;
+		final MessageTemplate msgTemplate1 = MessageTemplate.MatchLanguage("treasure");
+		final MessageTemplate msgTemplate2 = MessageTemplate.MatchLanguage("elu");
+		final MessageTemplate msgTemplate3 = MessageTemplate.MatchLanguage("ack");
+		final MessageTemplate msgTemplate4 = MessageTemplate.MatchLanguage("solution");
+		do{
+			msg1 = this.receive(msgTemplate1);
+			msg2 = this.receive(msgTemplate2);
+			msg3 = this.receive(msgTemplate3);
+			msg4 = this.receive(msgTemplate4);
+			
+		}while(msg1 != null || msg2 != null || msg3 != null || msg4 != null);
+	}
+	
 	
 }

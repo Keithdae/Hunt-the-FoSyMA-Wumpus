@@ -1,0 +1,98 @@
+DGS004
+null 0 0
+an 0	label:0
+an 1	label:1
+an 2	label:2
+an 3	label:3
+an 4	label:4
+an 5	label:5
+an 6	label:6
+an 7	label:7
+an 8	label:8
+an 9	label:9
+an 10	label:10
+an 11	label:11
+an 12	label:12
+an 13	label:13
+an 14	label:14
+an 15	label:15
+an 16	label:16
+an 17	label:17
+an 18	label:18
+an 19	label:19
+an 20	label:20
+an 21	label:21
+an 22	label:22
+an 23	label:23
+an 24	label:24
+an 25	label:25
+an 26	label:26
+an 27	label:27
+an 28	label:28
+an 29	label:29
+an 30	label:30
+an 31	label:31
+an 32	label:32
+an 33	label:33
+an 34	label:34
+an 35	label:35
+ae e1 0 1
+ae e2 0 6
+ae e3 1 2
+ae e4 1 7
+ae e5 2 3
+ae e6 2 8
+ae e7 3 4
+ae e8 3 9
+ae e9 4 5
+ae e10 4 10
+ae e11 5 11
+ae e12 6 7
+ae e13 6 12
+ae e14 7 8
+ae e15 7 13
+ae e16 8 9
+ae e17 8 14
+ae e18 9 10
+ae e19 9 15
+ae e20 10 11
+ae e21 10 16
+ae e22 11 17
+ae e23 12 18
+ae e24 12 13
+ae e25 13 14
+ae e26 13 19
+ae e27 14 15
+ae e28 14 20
+ae e29 15 16
+ae e30 15 21
+ae e31 16 17
+ae e32 16 22
+ae e33 17 23
+ae e34 18 19
+ae e35 18 24
+ae e36 19 20
+ae e37 19 25
+ae e38 20 21
+ae e39 20 26
+ae e40 21 22
+ae e41 21 27
+ae e42 22 23
+ae e43 22 28
+ae e44 23 29
+ae e45 24 25
+ae e46 24 30
+ae e47 25 26
+ae e48 25 31
+ae e49 26 27
+ae e50 26 32
+ae e51 27 28
+ae e52 27 33
+ae e53 28 29
+ae e54 28 34
+ae e55 29 35
+ae e56 30 31
+ae e57 31 32
+ae e58 32 33
+ae e59 33 34
+ae e60 34 35
