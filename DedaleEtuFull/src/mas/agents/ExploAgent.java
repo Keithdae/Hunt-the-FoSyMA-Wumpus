@@ -43,6 +43,13 @@ public class ExploAgent extends abstractAgent{
 	 * 
 	 */
 	private static final long serialVersionUID = -1784844593772918359L;
+	
+	
+	private static final int NO_PRIO = 0;
+	private static final int UNBLOCK_PRIO = 1;
+	private static final int TREASURE_PRIO = 2;
+	private static final int UNBLOCK_TREASURE_PRIO = 3;
+	
 
 	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
 	private Graphe graphe = new Graphe();
@@ -55,7 +62,9 @@ public class ExploAgent extends abstractAgent{
 	private FSMBehaviour fsm = new FSMBehaviour(this);
 	private ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
 	private CoopWalk cw = new CoopWalk(this);
-
+	
+	private int treasurePicked;
+	private int priorityLevel;
 
 	protected String styleSheet =
 	        "node.known {" +
@@ -93,8 +102,8 @@ public class ExploAgent extends abstractAgent{
 			System.exit(-1);
 		}
 		
-		//graphe.addNodeExpl(this.getCurrentPosition());
-	
+		this.priorityLevel = NO_PRIO;
+		
 
 		//Add the behaviours
 		addBehaviour(new SendGraph(this));
@@ -182,6 +191,10 @@ public class ExploAgent extends abstractAgent{
 	public long getPeriod() {
 		return period;
 	}
+	
+	public int getTreasurePicked() {
+		return treasurePicked;
+	}
 
 	public ArrayList<String> getPath() {
 		return path;
@@ -225,5 +238,32 @@ public class ExploAgent extends abstractAgent{
 		}while(msg1 != null || msg2 != null || msg3 != null || msg4 != null);
 	}
 	
+	public int betterPickUp()
+	{
+		int pu = this.pick();
+		this.treasurePicked += pu;
+		this.priorityLevel = NO_PRIO;
+		return pu;
+	}
 	
+	
+	public void setPriorityToNone()
+	{
+		this.priorityLevel = NO_PRIO;
+	}
+	
+	public void setPriorityToTreasure()
+	{
+		this.priorityLevel = TREASURE_PRIO;
+	}
+	
+	public void setPriorityToUnblock()
+	{
+		this.priorityLevel = UNBLOCK_PRIO;
+	}
+	
+	public void setPriorityToUnblockTreasure()
+	{
+		this.priorityLevel = UNBLOCK_TREASURE_PRIO;
+	}
 }

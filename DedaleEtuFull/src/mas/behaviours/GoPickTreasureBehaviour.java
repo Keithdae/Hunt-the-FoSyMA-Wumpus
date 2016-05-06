@@ -33,8 +33,9 @@ public class GoPickTreasureBehaviour extends TickerBehaviour {
 		}
 		else
 		{
-			int value = agent.pick();
+			int value = agent.betterPickUp();
 			System.out.println("I picked : " + value);
+			agent.setPriorityToNone();
 			agent.restartExplo();
 			this.stop();
 		}

@@ -134,6 +134,8 @@ public class CoopWalk extends TickerBehaviour {
 			//((mas.abstractAgent)this.myAgent).doDelete();
 			System.out.println("Noeuds explores a la fin : " + agent.getListeExplores());
 			System.out.println("Tresors trouves : " + agent.getGraph().getTresors());
+			System.out.println("Mon espace libre : " + agent.getBackPackFreeSpace());
+			System.out.println("Ma quantite de tresor ramassee : " + agent.getTreasurePicked());
 			this.stop();
 			mustStop = true;
 		}
