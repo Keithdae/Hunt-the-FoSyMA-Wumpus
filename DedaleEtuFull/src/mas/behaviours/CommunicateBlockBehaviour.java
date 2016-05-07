@@ -40,7 +40,9 @@ public class CommunicateBlockBehaviour extends TickerBehaviour {
 					blockRecu = (BlockMessage) msg.getContentObject();
 					if(blockRecu.getTarget().equals(agent.getCurrentPosition())) // Si on le bloque
 					{
-						if(agent.getPriorityLevel() <= blockRecu.getPriority()) // Si on est moins prioritaire
+						// Si on est moins prioritaire
+						if(agent.getPriorityLevel() < blockRecu.getPriority() || 
+								(agent.getPriorityLevel() == blockRecu.getPriority() && agent.getLocalName().compareTo(msg.getSender().getLocalName())>0)) 
 						{
 							if(blockRecu.getPath().size() > 1) // Si l'agent bloque dispose d'un chemin a parcourir
 							{
