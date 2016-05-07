@@ -2,6 +2,8 @@ package mas.behaviours;
 
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
+import jade.lang.acl.ACLMessage;
+
 import java.util.ArrayList;
 
 public class GoPickTreasureBehaviour extends TickerBehaviour {
@@ -21,14 +23,32 @@ public class GoPickTreasureBehaviour extends TickerBehaviour {
 		boolean moved = false;
 		if(!path.isEmpty())
 		{
+			// Un agent nous a laisse passer et attend un signal depuis un noeud adjacent pour pouvoir repartir
+			if(!agent.getNodeSignal().equals("") && agent.getCurrentPosition().equals(agent.getNodeSignal())
+					&& agent.getAgentToSignal() != null)
+			{
+				ACLMessage msgSignal = new ACLMessage(7);
+				msgSignal.setSender(this.myAgent.getAID());
+				msgSignal.setLanguage("signal");
+				msgSignal.setContent("go");
+				msgSignal.addReceiver(agent.getAgentToSignal());
+				((mas.abstractAgent)this.myAgent).sendMessage(msgSignal);
+				agent.setNodeSignal("");
+				agent.setAgentToSignal(null);
+			}
+			
 			moved = agent.moveTo(path.get(0));
 			if(!moved)
 			{
 				// Interblocage
+				agent.incEchecs();
+				agent.setBlockNode(path.get(0));
+				agent.setBlock(true);
 			}
 			else
 			{
 				path.remove(0);
+				agent.resetEchecs();
 			}
 		}
 		else
@@ -36,6 +56,7 @@ public class GoPickTreasureBehaviour extends TickerBehaviour {
 			int value = agent.betterPickUp();
 			System.out.println("I picked : " + value);
 			agent.setPriorityToNone();
+			agent.setTreasureGoal("");
 			agent.restartExplo();
 			this.stop();
 		}

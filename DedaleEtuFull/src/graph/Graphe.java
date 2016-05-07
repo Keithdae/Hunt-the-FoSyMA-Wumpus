@@ -233,4 +233,25 @@ public class Graphe implements Serializable {
 		}
 		return res;
 	}
+	
+	public String findFreeSpace(ArrayList<String> path)
+	{
+		String res = "";
+		boolean found = false;
+		
+		// Element 0 est la position de l'agent bloquant
+		for(int i=1; i<path.size() && !found; i++)
+		{
+			String curNode = path.get(i);
+			ArrayList<String> neigh = voisins(curNode);
+			neigh.removeAll(path); 
+			if(!neigh.isEmpty()) // Il y a un noeud qui n'est pas sur le chemin de l'autre agent
+			{
+				res = neigh.get(0);
+				found = true;
+			}
+		}
+		
+		return res;
+	}
 }

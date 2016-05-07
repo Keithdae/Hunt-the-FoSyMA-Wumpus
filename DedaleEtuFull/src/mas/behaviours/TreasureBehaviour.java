@@ -242,9 +242,9 @@ public class TreasureBehaviour extends TickerBehaviour {
 			ExploAgent ag = (ExploAgent) this.myAgent;
 			ag.viderBoiteReception();
 			if(chosenOne){
-				ArrayList<String> path = ag.getGraph().checkPath(ag.getCurrentPosition(), this.tresor.getFirst());
-				ag.setPriorityToTreasure();
-				this.myAgent.addBehaviour(new GoPickTreasureBehaviour(this.myAgent, path));
+				ag.setFormerBehaviourToGoPickTreasure();
+				ag.setTreasureGoal(this.tresor.getFirst());
+				ag.restartGoPick();
 			}
 			else{
 				if(parent.equals(""))

@@ -1,8 +1,8 @@
 package mas.agents;
 
 
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.FSMBehaviour;
+
+import jade.core.AID;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -45,10 +45,13 @@ public class ExploAgent extends abstractAgent{
 	private static final long serialVersionUID = -1784844593772918359L;
 	
 	
-	private static final int NO_PRIO = 0;
-	private static final int UNBLOCK_PRIO = 1;
-	private static final int TREASURE_PRIO = 2;
-	private static final int UNBLOCK_TREASURE_PRIO = 3;
+	public static final int NO_PRIO = 0;
+	public static final int UNBLOCK_PRIO = 1;
+	public static final int TREASURE_PRIO = 2;
+	public static final int UNBLOCK_TREASURE_PRIO = 3;
+	
+	public static final int COOP_WALK = 0;
+	public static final int GO_PICK_TREASURE = 1;
 	
 
 	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
@@ -59,12 +62,16 @@ public class ExploAgent extends abstractAgent{
 	private int echecs = 0;
 	private ArrayList<String> path = new ArrayList<String>();
 	
-	private FSMBehaviour fsm = new FSMBehaviour(this);
-	private ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
-	private CoopWalk cw = new CoopWalk(this);
 	
 	private int treasurePicked;
 	private int priorityLevel;
+	private boolean blocked=false;
+	private boolean sentBlock=false;
+	private String nodeSignal = "";
+	private AID agentToSignal;
+	private String blockNode = "";
+	private int formerBehaviour = COOP_WALK;
+	private String treasureGoal = "";
 
 	protected String styleSheet =
 	        "node.known {" +
@@ -107,10 +114,10 @@ public class ExploAgent extends abstractAgent{
 
 		//Add the behaviours
 		addBehaviour(new SendGraph(this));
-		pb.addSubBehaviour(cw);
-		fsm.registerFirstState(pb, "Exploration");
-		addBehaviour(fsm);
-		
+		ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
+		pb.addSubBehaviour(new CoopWalk(this));
+		pb.addSubBehaviour(new CommunicateBlockBehaviour(this));
+		this.addBehaviour(pb);
 		
 		
 		
@@ -181,6 +188,8 @@ public class ExploAgent extends abstractAgent{
 	}
 
 	public void resetEchecs() {
+		sentBlock = false;
+		blocked = false;
 		this.echecs = 0;
 	}
 	
@@ -195,6 +204,18 @@ public class ExploAgent extends abstractAgent{
 	public int getTreasurePicked() {
 		return treasurePicked;
 	}
+	
+	public int getPriorityLevel() {
+		return priorityLevel;
+	}
+	
+	public boolean getBlocked() {
+		return blocked;
+	}
+	
+	public void setBlock(boolean b) {
+		blocked = b;
+	}
 
 	public ArrayList<String> getPath() {
 		return path;
@@ -204,24 +225,81 @@ public class ExploAgent extends abstractAgent{
 		this.path = path;
 	}
 	
+	public String getTreasureGoal() {
+		return treasureGoal;
+	}
+	
+	public void setTreasureGoal(String node) {
+		treasureGoal = node;
+	}	
+	
+	public String getNodeSignal() {
+		return nodeSignal;
+	}
+	
+	public void setNodeSignal(String node) {
+		nodeSignal = node;
+	}	
+	
+	public String getBlockNode() {
+		return blockNode;
+	}
+	
+	public void setBlockNode(String bn) {
+		blockNode = bn;
+	}
+	
+	public boolean getSentBlock() {
+		return sentBlock;
+	}
+	
+	public void setSentBlock(boolean b) {
+		sentBlock = b;
+	}
+	
+	public AID getAgentToSignal() {
+		return agentToSignal;
+	}
+	
+	public void setAgentToSignal(AID a) {
+		agentToSignal = a;
+	}
+	
 	public void restartExplo() {
-		jade.util.leap.Collection c = this.pb.getTerminatedChildren();
-		if(!c.isEmpty())
-		{
-			pb.removeSubBehaviour((Behaviour) c.toArray()[0]);
-			cw = new CoopWalk(this);
-			pb.addSubBehaviour(cw);
-		}
+		ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
+		pb.addSubBehaviour(new CoopWalk(this));
+		pb.addSubBehaviour(new CommunicateBlockBehaviour(this));
+		this.addBehaviour(pb);
+		this.setFormerBehaviourToCoopWalk();
+		this.setPriorityToNone();
+	}
+	
+	public void restartGoPick() {
+		ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
+		pb.addSubBehaviour(new GoPickTreasureBehaviour(this, getGraph().checkPath(getCurrentPosition(), treasureGoal)));
+		pb.addSubBehaviour(new CommunicateBlockBehaviour(this));
+		this.addBehaviour(pb);
+		this.setFormerBehaviourToGoPickTreasure();
+		this.setPriorityToTreasure();
 	}
 	
 	public void restartTreasuring(Pair<String,Integer> tresor, int prof, String parent){
 		System.out.println("Start TREASURING for agent " + this.getLocalName());
-		fsm.deregisterState("Treasure");
-		fsm.registerState(new TreasureBehaviour(this,tresor,prof, parent), "Treasure");
-		fsm.registerTransition("Exploration", "Treasure", 0);
-		fsm.registerTransition("Treasure", "Exploration", 0);
-		
+		this.addBehaviour(new TreasureBehaviour(this,tresor,prof, parent));
 	}
+	
+	public void restartGoToFreeSpace(ArrayList<String> path) {
+		ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
+		pb.addSubBehaviour(new GoToFreeSpaceBehaviour(this, path));
+		pb.addSubBehaviour(new CommunicateBlockBehaviour(this));
+		this.addBehaviour(pb);
+	}
+	
+	public void restartWaitForSignal() {
+		this.addBehaviour(new WaitForSignalBehaviour(this));
+	}
+	
+	
 	
 	public void viderBoiteReception(){
 		ACLMessage msg1, msg2, msg3, msg4;
@@ -265,5 +343,17 @@ public class ExploAgent extends abstractAgent{
 	public void setPriorityToUnblockTreasure()
 	{
 		this.priorityLevel = UNBLOCK_TREASURE_PRIO;
+	}
+	
+	public int getFormerBehaviour() {
+		return formerBehaviour;
+	}
+	
+	public void setFormerBehaviourToCoopWalk() {
+		this.formerBehaviour = COOP_WALK;
+	}
+	
+	public void setFormerBehaviourToGoPickTreasure() {
+		this.formerBehaviour = GO_PICK_TREASURE;
 	}
 }

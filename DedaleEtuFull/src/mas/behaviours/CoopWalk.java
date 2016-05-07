@@ -140,8 +140,22 @@ public class CoopWalk extends TickerBehaviour {
 			mustStop = true;
 		}
 		
-		if(!mustStop) // Behaviour fini
+		if(!mustStop) // Si le Behaviour n'est pas fini, on continue a explorer
 		{
+			// Un agent nous a laisse passer et attend un signal depuis un noeud adjacent pour pouvoir repartir
+			if(!agent.getNodeSignal().equals("") && agent.getCurrentPosition().equals(agent.getNodeSignal())
+					&& agent.getAgentToSignal() != null)
+			{
+				ACLMessage msgSignal = new ACLMessage(7);
+				msgSignal.setSender(this.myAgent.getAID());
+				msgSignal.setLanguage("signal");
+				msgSignal.setContent("go");
+				msgSignal.addReceiver(agent.getAgentToSignal());
+				((mas.abstractAgent)this.myAgent).sendMessage(msgSignal);
+				agent.setNodeSignal("");
+				agent.setAgentToSignal(null);
+			}
+			
 			// On se deplace vers un noeud connu a distance 1
 			int i = 0;
 			boolean avance = false;
@@ -175,6 +189,8 @@ public class CoopWalk extends TickerBehaviour {
 				}
 				else{
 					agent.incEchecs();
+					agent.setBlockNode(agent.getPath().get(0));
+					agent.setBlock(true);
 				}
 			}
 			
@@ -196,5 +212,6 @@ public class CoopWalk extends TickerBehaviour {
 			}	
 		}
 	} // OnTick	
-
+	
+	
 }

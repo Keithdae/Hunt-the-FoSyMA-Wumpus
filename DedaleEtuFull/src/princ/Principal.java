@@ -29,7 +29,7 @@ public class Principal {
 	private static List<AgentController> agentList;// agents's ref
 	@SuppressWarnings("unused")
 	private static Runtime rt;	
-	private static int nbAgents = 10;
+	private static int nbAgents = 5;
 
 	private static Environment env;// static ref of the real environment
 
