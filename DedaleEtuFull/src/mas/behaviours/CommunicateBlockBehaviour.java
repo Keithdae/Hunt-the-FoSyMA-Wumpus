@@ -42,46 +42,69 @@ public class CommunicateBlockBehaviour extends TickerBehaviour {
 					{
 						if(agent.getPriorityLevel() <= blockRecu.getPriority()) // Si on est moins prioritaire
 						{
-							String freeSpace = agent.getGraph().findFreeSpace(blockRecu.getPath());
-							if(!freeSpace.equals(""))
+							if(blockRecu.getPath().size() > 1) // Si l'agent bloque dispose d'un chemin a parcourir
 							{
-								// Chemin vers l'espace libre
-								ArrayList<String> path = agent.getGraph().checkPath(agent.getCurrentPosition(), freeSpace);
-								// On cherche le noeud voisin de l'espace ou passe celui qu'on a bloque 
-								ArrayList<String> neigh = agent.getGraph().voisins(freeSpace);
-								neigh.retainAll(blockRecu.getPath());
-								String signalNode = "";
-								if(neigh.size() > 0 && blockRecu.getPath().contains(neigh.get(0)))
+								String freeSpace = agent.getGraph().findFreeSpace(blockRecu.getPath());
+								if(!freeSpace.equals("")) // Si on peut laisser passer l'autre agent
 								{
-									signalNode = neigh.get(0);
+									// Chemin vers l'espace libre
+									ArrayList<String> path = agent.getGraph().checkPath(agent.getCurrentPosition(), freeSpace);
+									// On cherche le noeud voisin de l'espace ou passe celui qu'on a bloque 
+									ArrayList<String> neigh = agent.getGraph().voisins(freeSpace);
+									neigh.retainAll(blockRecu.getPath());
+									String signalNode = "";
+									if(neigh.size() > 0 && blockRecu.getPath().contains(neigh.get(0)))
+									{
+										signalNode = neigh.get(0);
+									}
+									// On envoie le noeud a l'agent que l'on bloque
+									ACLMessage msgNodeSignal = new ACLMessage(7);
+									msgNodeSignal.setSender(this.myAgent.getAID());
+									msgNodeSignal.setLanguage("nodesignal");
+									msgNodeSignal.setContent(signalNode);
+									msgNodeSignal.addReceiver(msg.getSender());
+									// On se rend vers l'espace libre
+									agent.restartGoToFreeSpace(path);
+									switch(blockRecu.getPriority()) {
+									case ExploAgent.UNBLOCK_TREASURE_PRIO:
+										agent.setPriorityToUnblockTreasure();
+										break;
+									case ExploAgent.TREASURE_PRIO:
+										agent.setPriorityToUnblockTreasure();
+										break;
+									case ExploAgent.UNBLOCK_PRIO:
+										agent.setPriorityToUnblock();
+										break;
+									case ExploAgent.NO_PRIO:
+										agent.setPriorityToUnblock();
+										break;
+									default:
+										System.out.println("INCONSISTENT PRIORITY LEVEL RECEIVED");
+									}
+									agent.setBlock(false);
+									this.stop();
 								}
-								// On envoie le noeud a l'agent que l'on bloque
-								ACLMessage msgNodeSignal = new ACLMessage(7);
-								msgNodeSignal.setSender(this.myAgent.getAID());
-								msgNodeSignal.setLanguage("nodesignal");
-								msgNodeSignal.setContent(signalNode);
-								msgNodeSignal.addReceiver(msg.getSender());
-								// On se rend vers l'espace libre
-								agent.restartGoToFreeSpace(path);
-								switch(blockRecu.getPriority()) {
-								case ExploAgent.UNBLOCK_TREASURE_PRIO:
+								else // On ne connait pas de moyen pour laisser passer l'agent, c'est à lui de bouger
+								{
+									// On s'assure d'envoyer un message block a cet agent
+									agent.setBlock(true);
+									agent.setBlockNode(blockRecu.getPath().get(0));
+									agent.setSentBlock(false);
+									// On triche sur notre priorite
 									agent.setPriorityToUnblockTreasure();
-									break;
-								case ExploAgent.TREASURE_PRIO:
-									agent.setPriorityToUnblockTreasure();
-									break;
-								case ExploAgent.UNBLOCK_PRIO:
-									agent.setPriorityToUnblock();
-									break;
-								case ExploAgent.NO_PRIO:
-									agent.setPriorityToUnblock();
-									break;
-								default:
-									System.out.println("INCONSISTENT PRIORITY LEVEL RECEIVED");
 								}
-								agent.setBlock(false);
-								this.stop();
 							}
+							else // Si il n'a pas de chemin, on cherche un autre moyen de resolution
+							{
+								System.out.println("Ca n'aurait pas du arriver, oops.");
+							}
+						}
+						else // Cet agent est moins prioritaire, c'est a lui de me laisser passer
+						{
+							// On s'assure d'envoyer un message block a cet agent
+							agent.setBlock(true);
+							agent.setBlockNode(blockRecu.getPath().get(0));
+							agent.setSentBlock(false);
 						}
 					}
 				} catch(UnreadableException e){
@@ -103,7 +126,10 @@ public class CommunicateBlockBehaviour extends TickerBehaviour {
 		
 		if(agent.getBlocked() && !agent.getSentBlock()) // Si l'agent est bloque, on essaye de communiquer avec l'agent concerne
 		{
-			BlockMessage bm = new BlockMessage(agent.getBlockNode(), agent.getPath(), agent.getPriorityLevel());
+			@SuppressWarnings("unchecked")
+			ArrayList<String> path = (ArrayList<String>) agent.getPath().clone();
+			path.add(0, agent.getCurrentPosition());
+			BlockMessage bm = new BlockMessage(agent.getBlockNode(), path, agent.getPriorityLevel());
 			ACLMessage msgBlock = new ACLMessage(7);
 			msgBlock.setSender(this.myAgent.getAID());
 			msgBlock.setLanguage("block");
