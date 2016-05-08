@@ -31,8 +31,6 @@ public class SendGraph extends TickerBehaviour{
 
 	@Override
 	public void onTick() {
-		//ExploAgent ag  = (ExploAgent) this.myAgent;
-		//ag.restartExplo();
 		
 		String myPosition=((mas.abstractAgent)this.myAgent).getCurrentPosition();
 

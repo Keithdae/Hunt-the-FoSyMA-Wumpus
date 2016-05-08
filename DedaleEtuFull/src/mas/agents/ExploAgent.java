@@ -52,7 +52,7 @@ public class ExploAgent extends abstractAgent{
 	
 	public static final int COOP_WALK = 0;
 	public static final int GO_PICK_TREASURE = 1;
-	
+	public static final int EXPLO_END = 2;
 
 	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
 	private Graphe graphe = new Graphe();
@@ -265,6 +265,10 @@ public class ExploAgent extends abstractAgent{
 		agentToSignal = a;
 	}
 	
+	public boolean backpackFull() {
+		return getBackPackFreeSpace() == 0;
+	}
+	
 	public void restartExplo() {
 		ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
 		pb.addSubBehaviour(new CoopWalk(this));
@@ -297,6 +301,15 @@ public class ExploAgent extends abstractAgent{
 	
 	public void restartWaitForSignal() {
 		this.addBehaviour(new WaitForSignalBehaviour(this));
+	}
+	
+	public void restartExploEnd() {
+		ParallelBehaviour pb = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
+		pb.addSubBehaviour(new ExploEndBehaviour(this));
+		pb.addSubBehaviour(new CommunicateBlockBehaviour(this));
+		this.addBehaviour(pb);
+		this.setFormerBehaviourToExploEnd();
+		this.setPriorityToTreasure();
 	}
 	
 	
@@ -355,5 +368,9 @@ public class ExploAgent extends abstractAgent{
 	
 	public void setFormerBehaviourToGoPickTreasure() {
 		this.formerBehaviour = GO_PICK_TREASURE;
+	}
+	
+	public void setFormerBehaviourToExploEnd() {
+		this.formerBehaviour = EXPLO_END;
 	}
 }

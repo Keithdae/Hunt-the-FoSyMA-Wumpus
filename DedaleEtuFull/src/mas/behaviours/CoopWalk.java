@@ -92,6 +92,13 @@ public class CoopWalk extends TickerBehaviour {
 				mustStop = true;
 			}
 		}
+		else // Si le noeud etait un tresor (entierement ramasse), on le retire du graphe
+		{
+			if(agent.getGraph().isTreasureNode(agent.getCurrentPosition()))
+			{
+				agent.getGraph().removeTreasure(agent.getCurrentPosition());
+			}
+		}
 		//Difference des listes explorables et explorés
 		String curNode ="";
 		try{
@@ -138,6 +145,8 @@ public class CoopWalk extends TickerBehaviour {
 			System.out.println("Ma quantite de tresor ramassee : " + agent.getTreasurePicked());
 			this.stop();
 			mustStop = true;
+			agent.restartExploEnd();
+			agent.getPath().clear();
 		}
 		
 		if(!mustStop) // Si le Behaviour n'est pas fini, on continue a explorer
