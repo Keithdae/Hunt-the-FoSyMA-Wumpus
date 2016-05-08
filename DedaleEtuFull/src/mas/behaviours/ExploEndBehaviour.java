@@ -4,9 +4,12 @@ import java.util.List;
 
 import env.Attribute;
 import env.Couple;
+import graph.Graphe;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 public class ExploEndBehaviour extends TickerBehaviour {
 
@@ -21,6 +24,21 @@ public class ExploEndBehaviour extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		mas.agents.ExploAgent agent = (mas.agents.ExploAgent)this.myAgent;
+		ACLMessage msg;
+		do{
+			final MessageTemplate msgTemplate = MessageTemplate.MatchLanguage("graph");
+			msg = agent.receive(msgTemplate);
+			if(msg != null){
+				//Union des listes des noeuds explorÃ©s
+				try {
+					Graphe grapheRecu = (Graphe)msg.getContentObject();
+					agent.getGraph().merge(grapheRecu);												
+				} catch(UnreadableException e){
+					e.printStackTrace();
+				}
+			}
+		}while(msg != null);
+		
 		
 		// Exploration finie et plus d'espace, cet agent n'a plus de rôle particulier
 		if(agent.backpackFull() && !done){

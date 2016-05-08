@@ -35,7 +35,7 @@ public class CoopWalk extends TickerBehaviour {
 		ACLMessage msg;
 		do{
 			final MessageTemplate msgTemplate = MessageTemplate.MatchLanguage("graph");
-			msg = this.myAgent.receive(msgTemplate);
+			msg = agent.receive(msgTemplate);
 			if(msg != null){
 				//Union des listes des noeuds explorés
 				try {
@@ -49,7 +49,7 @@ public class CoopWalk extends TickerBehaviour {
 		
 		//il y a-t-il des trésors autour?
 		final MessageTemplate msgTemplate = MessageTemplate.MatchLanguage("treasure");
-		msg = this.myAgent.receive(msgTemplate);
+		msg = agent.receive(msgTemplate);
 		if(msg != null) {
 			try {
 				@SuppressWarnings("unchecked")
@@ -58,11 +58,11 @@ public class CoopWalk extends TickerBehaviour {
 				{
 					agent.restartTreasuring(infotresor.getFirst(), infotresor.getSecond(), msg.getSender().getLocalName());
 					ACLMessage ack=new ACLMessage(7);
-					ack.setSender(this.myAgent.getAID());
+					ack.setSender(agent.getAID());
 					ack.setLanguage("ack");
 					ack.setContent("ack");
 					ack.addReceiver(msg.getSender());
-					((mas.abstractAgent)this.myAgent).sendMessage(ack);
+					agent.sendMessage(ack);
 					this.stop();
 					mustStop = true;
 				}
@@ -72,10 +72,10 @@ public class CoopWalk extends TickerBehaviour {
 		}
 		
 		//Listes des noeuds voisins atteignables
-		List<Couple<String,List<Attribute>>> lobs=((mas.abstractAgent)this.myAgent).observe();
-		System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
-		System.out.println(this.myAgent.getLocalName()+" -- list of known nodes before: "+agent.getGraph().getConnus());
-		//System.out.println(this.myAgent.getLocalName()+" -- list of explored nodes: "+agent.getListeExplores());
+		List<Couple<String,List<Attribute>>> lobs=agent.observe();
+		System.out.println(agent.getLocalName()+" -- list of observables: "+lobs);
+		System.out.println(agent.getLocalName()+" -- list of known nodes before: "+agent.getGraph().getConnus());
+		//System.out.println(agent.getLocalName()+" -- list of explored nodes: "+agent.getListeExplores());
 		// On extrait les noeuds observes, sans leurs attributs
 		Collection<String> listeExplorables = new ArrayList<String>();
 		for(Couple<String,List<Attribute>> noeud: lobs){
@@ -105,7 +105,7 @@ public class CoopWalk extends TickerBehaviour {
 			curNode = (String)listeExplorables.toArray()[0];
 			agent.getGraph().addNodeExpl(curNode);
 			listeExplorables.removeAll(agent.getListeExplores());
-			//System.out.println(this.myAgent.getLocalName()+" -- list of explorables: "+listeExplorables);
+			//System.out.println(agent.getLocalName()+" -- list of explorables: "+listeExplorables);
 		}catch(NullPointerException e){
 			e.printStackTrace();
 		}
@@ -124,9 +124,9 @@ public class CoopWalk extends TickerBehaviour {
 		
 		//Little pause to allow you to follow what is going on
 		/*try {
-			System.out.println("Press a key to allow the agent "+this.myAgent.getLocalName() +" to execute its next move");
-			System.out.println(this.myAgent.getLocalName()+" -- list of explored nodes: "+agent.getListeExplores());
-			System.out.println(this.myAgent.getLocalName()+" -- list of known nodes after: "+agent.getGraph().getConnus());
+			System.out.println("Press a key to allow the agent "+agent.getLocalName() +" to execute its next move");
+			System.out.println(agent.getLocalName()+" -- list of explored nodes: "+agent.getListeExplores());
+			System.out.println(agent.getLocalName()+" -- list of known nodes after: "+agent.getGraph().getConnus());
 			System.in.read();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -138,7 +138,6 @@ public class CoopWalk extends TickerBehaviour {
 		if(agent.getGraph().isExplored())
 		{
 			System.out.println("Fin parcours");
-			//((mas.abstractAgent)this.myAgent).doDelete();
 			System.out.println("Noeuds explores a la fin : " + agent.getListeExplores());
 			System.out.println("Tresors trouves : " + agent.getGraph().getTresors());
 			System.out.println("Mon espace libre : " + agent.getBackPackFreeSpace());
@@ -156,11 +155,11 @@ public class CoopWalk extends TickerBehaviour {
 					&& agent.getAgentToSignal() != null)
 			{
 				ACLMessage msgSignal = new ACLMessage(7);
-				msgSignal.setSender(this.myAgent.getAID());
+				msgSignal.setSender(agent.getAID());
 				msgSignal.setLanguage("signal");
 				msgSignal.setContent("go");
 				msgSignal.addReceiver(agent.getAgentToSignal());
-				((mas.abstractAgent)this.myAgent).sendMessage(msgSignal);
+				agent.sendMessage(msgSignal);
 				agent.setNodeSignal("");
 				agent.setAgentToSignal(null);
 			}
@@ -173,9 +172,9 @@ public class CoopWalk extends TickerBehaviour {
 				avance = agent.moveTo((String)listeExplorables.toArray()[i]);
 				if(avance){
 					agent.resetEchecs();
-					//agent.getGraph().addNodeExpl(((mas.abstractAgent)this.myAgent).getCurrentPosition());
+					//agent.getGraph().addNodeExpl(agent.getCurrentPosition());
 					agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
-					agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
+					agent.getGraphStream().getNode(agent.getCurrentPosition()).addAttribute("ui.color",1);
 				}
 				else
 					System.out.println("Failure to move");
@@ -194,7 +193,7 @@ public class CoopWalk extends TickerBehaviour {
 					agent.resetEchecs();
 					agent.getPath().remove(0);
 					agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
-					agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
+					agent.getGraphStream().getNode(agent.getCurrentPosition()).addAttribute("ui.color",1);
 				}
 				else{
 					agent.incEchecs();
@@ -215,7 +214,7 @@ public class CoopWalk extends TickerBehaviour {
 					else{
 						agent.resetEchecs();
 						agent.getGraphStream().getNode(curNode).removeAttribute("ui.color");
-						agent.getGraphStream().getNode(((mas.abstractAgent)this.myAgent).getCurrentPosition()).addAttribute("ui.color",1);
+						agent.getGraphStream().getNode(agent.getCurrentPosition()).addAttribute("ui.color",1);
 					}
 				}
 			}	
