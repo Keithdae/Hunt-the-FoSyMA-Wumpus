@@ -254,4 +254,51 @@ public class Graphe implements Serializable {
 		
 		return res;
 	}
+	
+	public void removeTreasure(String node) {
+		boolean found = false;
+		Pair<String,Integer> tp = new Pair<String,Integer>("",0);
+		for(Pair<String,Integer> t : tresors)
+		{
+			if(t.getFirst().equals(node))
+			{
+				found = true;
+				tp = t;
+			}
+		}
+		if(found)
+		{
+			tresors.remove(tp);			
+		}
+	}
+	
+	public boolean isTreasureNode(String node)
+	{
+		boolean found = false;
+		for(Pair<String,Integer> t : tresors)
+		{
+			if(t.getFirst().equals(node))
+			{
+				found = true;
+			}
+		}
+		return found;
+	}
+	
+	public String getMaxTreasure()
+	{
+		String res = "";
+		int max = -1;
+		for(Pair<String,Integer> t : tresors)
+		{
+			String curNode = t.getFirst();
+			int curValue = t.getSecond();
+			if(curValue > max)
+			{
+				res = curNode;
+			}
+		}
+		return res;
+	}
+	
 }
