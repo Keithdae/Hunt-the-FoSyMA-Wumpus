@@ -43,7 +43,7 @@ public class TreasureBehaviour extends TickerBehaviour {
 
 	@Override
 	protected void onTick() {
-		if(etape1 && profondeur!=0 && timeout < profondeur*2){
+		if(etape1 && profondeur!=0 && timeout < profondeur*5){
 			ACLMessage msg=new ACLMessage(7);
 			msg.setSender(this.myAgent.getAID());
 			msg.setLanguage("treasure");

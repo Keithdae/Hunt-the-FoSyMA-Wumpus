@@ -40,7 +40,7 @@ public class ExploEndBehaviour extends TickerBehaviour {
 		}while(msg != null);
 		
 		
-		// Exploration finie et plus d'espace, cet agent n'a plus de rôle particulier
+		// Exploration finie et plus d'espace, cet agent n'a plus de rï¿½le particulier
 		if(agent.backpackFull() && !done){
 			System.out.println(agent.getLocalName() + " can't pick anything more, already has : " + agent.getTreasurePicked());
 			done = true;
@@ -66,7 +66,7 @@ public class ExploEndBehaviour extends TickerBehaviour {
 				agent.setAgentToSignal(null);
 			}
 			
-			// On se dirige vers un trésor
+			// On se dirige vers un trï¿½sor
 			if(!agent.getPath().isEmpty())
 			{
 				boolean avance;
@@ -84,7 +84,7 @@ public class ExploEndBehaviour extends TickerBehaviour {
 					agent.setBlock(true);
 				}
 			}
-			else // Si on est sur un trésor => on ramasse / sinon on se dirige vers un autre trésor
+			else // Si on est sur un trï¿½sor => on ramasse / sinon on se dirige vers un autre trï¿½sor
 			{
 				List<Couple<String,List<Attribute>>> lobs=((mas.abstractAgent)this.myAgent).observe();
 				
@@ -109,7 +109,7 @@ public class ExploEndBehaviour extends TickerBehaviour {
 					}
 				}
 				
-				agent.setPath(agent.getGraph().checkPath(agent.getCurrentPosition(), agent.getGraph().getMaxTreasure())); // TODO
+				agent.setPath(agent.getGraph().checkPath(agent.getCurrentPosition(), agent.getGraph().getMaxTreasure(agent.getCurrentPosition()))); // TODO
 			}
 		}
 	}

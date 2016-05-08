@@ -1,1 +1,1 @@
-http://192.168.1.84:7778/acc
+http://DaneLinux:7778/acc

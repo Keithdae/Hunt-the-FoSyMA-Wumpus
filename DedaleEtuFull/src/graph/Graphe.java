@@ -285,17 +285,30 @@ public class Graphe implements Serializable {
 		return found;
 	}
 	
-	public String getMaxTreasure()
+	public String getMaxTreasure(String start)
 	{
 		String res = "";
-		int max = -1;
-		for(Pair<String,Integer> t : tresors)
-		{
-			String curNode = t.getFirst();
-			int curValue = t.getSecond();
-			if(curValue > max)
-			{
-				res = curNode;
+		ArrayList<String> file = new ArrayList<String>();
+		ArrayList<String> markus = new ArrayList<String>();
+		ArrayList<Pair<String,String>> perus = new ArrayList<Pair<String,String>>();
+		file.add(start);
+		markus.add(start);
+		String ncn = "";
+		boolean trouve = false;
+		while(!file.isEmpty() && !trouve){
+			String nodus = file.remove(0);
+			ArrayList<String> voisins = voisins(nodus);
+			for(int i=0;i<voisins.size() && !trouve;i++){
+				ncn = voisins.get(i);
+				perus.add(new Pair<String, String>(ncn,nodus));
+				if(tresors.contains(ncn)){
+					trouve = true;
+					res = ncn;
+				}
+				if(!markus.contains(ncn)){
+					file.add(ncn);
+					markus.add(ncn);
+				}
 			}
 		}
 		return res;
