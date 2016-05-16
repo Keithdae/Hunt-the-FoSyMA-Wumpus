@@ -20,7 +20,7 @@ import graph.BlockMessage;
 public class CommunicateBlockBehaviour extends TickerBehaviour {
 
 	public CommunicateBlockBehaviour(Agent a) {
-		super(a, ((mas.agents.ExploAgent) a).getPeriod());
+		super(a, 200);
 	}
 
 	private static final long serialVersionUID = -1341735220936583574L;
@@ -86,7 +86,7 @@ public class CommunicateBlockBehaviour extends TickerBehaviour {
 									agent.setBlock(false);
 									this.stop();
 								}
-								else // On ne connait pas de moyen pour laisser passer l'agent, c'est à lui de bouger
+								else // On ne connait pas de moyen pour laisser passer l'agent, c'est ï¿½ lui de bouger
 								{
 									// On s'assure d'envoyer un message block a cet agent
 									agent.setBlock(true);

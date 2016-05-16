@@ -57,7 +57,7 @@ public class ExploAgent extends abstractAgent{
 	private GraphStreamSerial graph = new GraphStreamSerial(this.getLocalName());
 	private Graphe graphe = new Graphe();
 	private Random rng = new Random();
-	private long period = 100;
+	private long period = 600;
 
 	private int echecs = 0;
 	private ArrayList<String> path = new ArrayList<String>();

@@ -17,7 +17,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class TreasureBehaviour extends TickerBehaviour {
-	private static final long period = 10;
+	private static final long period = 300;
 	
 	private static final long serialVersionUID = -9129138170018876510L;
 	private boolean done = false;

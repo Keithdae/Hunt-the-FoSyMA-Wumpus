@@ -11,6 +11,7 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
+import mas.agents.DummyWumpusAgent;
 import mas.agents.ExploAgent;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import env.Environment;
-import env.Environment.ENVtype;
+//import env.Environment.ENVtype;
 
 
 
@@ -37,9 +38,9 @@ public class Principal {
 
 		//0) Create the real environment and the observed one
 		//env= new Environment(ENVtype.GRID_T,20,null);
-		env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
+		//env= new Environment(ENVtype.DOROGOVTSEV_T,300,null);
 		//env = new Environment("ressources/mapTestTreasure","ressources/mapTestTreasureconfig");
-
+		env=new Environment("ressources/map2016","ressources/map2016config");
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
 		rt=emptyPlatform(containerList);
@@ -231,7 +232,7 @@ public class Principal {
 		//Agent0 on container0
 		c = containerList.get("container0");
 		for(int i=0; i<nbAgents;i++){
-			agentName="Explo"+Integer.toString(i);
+			agentName="Agent"+Integer.toString(i+1);
 			try {
 	
 				Object[] objtab=new Object[]{env};//used to give informations to the agent
@@ -243,8 +244,17 @@ public class Principal {
 				e.printStackTrace();
 			}
 		}
-//
-////
+		//wumpus on container0
+		c = containerList.get("container0");
+		agentName="Golem";//"Wumpus1"
+		try {
+		 Object[] objtab=new Object[]{env};//used to give informations to the agent
+		 AgentController ag=c.createNewAgent(agentName,DummyWumpusAgent.class.getName(),objtab);
+		 agentList.add(ag);
+		 System.out.println(agentName+" launched");
+		} catch (StaleProxyException e) {
+		 e.printStackTrace();
+		}
 		
 
 //		//Agent0 on container0

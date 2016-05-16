@@ -11,11 +11,13 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import mas.agents.DummyExploAgent;
+
+
+/*import mas.agents.DummyExploAgent;
 import mas.agents.DummyMigrationAgent;
 import mas.agents.DummyWumpusAgent;
 import mas.agents.GateKeeperAgent;
-
+*/
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
 import org.junit.Assert;
 
 import env.Environment;
-import env.Environment.ENVtype;
+//import env.Environment.ENVtype;
 
 
 
@@ -39,8 +41,10 @@ public class PrincipalD {
 	
 	private static HashMap<String, ContainerController> containerList=new HashMap<String, ContainerController>();// container's name - container's ref
 	private static List<AgentController> agentList;// agents's ref
+	@SuppressWarnings("unused")
 	private static Runtime rt;	
 
+	@SuppressWarnings("unused")
 	private static Environment env;// static ref of the real environment
 
 	public static void main(String[] args){
